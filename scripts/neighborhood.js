@@ -288,7 +288,7 @@ var NeighborhoodViewModel = {
   getResults : function(){
     var terms = this.searchTerm();
     var searchQuery = this.reviewSiteResults();
-    var searchMeters = parseInt(this.searchRadius() * 1609);
+    var searchMeters = parseInt(this.searchRadius() * 1609);//searchMeters takes the miles inputed and converts to meters which is what the API's expect.
     if (this.formattedAddress() == 'Location Not Found' || this.formattedAddress() == undefined || this.formattedAddress() == null){
       this.formattedAddress('Milwaukee,WI');
     }
