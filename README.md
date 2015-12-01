@@ -24,14 +24,13 @@ Neighborhood Map
 
 ##### Project Notes
 
-Wow, did this one take me awhile, but this is by far my favorite project thus far. Please note the following:
+By far my favorite project thus far. Please note the following:
 
-	- I didn't minify any of my main files (index.html or neighborhood.js) for ease of evaluation.
-	- 
-	- To use the Yelp API, I had use this wonderful link and stack overflow question answer for help:
-		http://stackoverflow.com/questions/13149211/yelp-api-google-app-script-oauth
+- I didn't minify any of my main files (index.html or neighborhood.js) for ease of evaluation.
 
-	-Most of my error handling is handled by providing defaults and also making console.log error messages for debugging.
+- To use the Yelp API, I had use this wonderful link and stack overflow question answer for help:
+	http://stackoverflow.com/questions/13149211/yelp-api-google-app-script-oauth
+
+-Most of my error handling is handled by providing defaults and also making console.log error messages for debugging.
 	 
-	 I tried to gracefully handle these errors this way as to not alert the user something was wrong. This is why I tried
-	 to display what was returned by the location to the user. I would definitely take advice on how to do this better.
+=I tried to gracefully handle these errors this way as to not alert the user something was wrong. This is why I tried to display what was returned by the location to the user. I would definitely take advice on how to do this better.
