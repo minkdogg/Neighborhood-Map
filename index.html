@@ -1,0 +1,239 @@
+<!doctype html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Project 5 - Neighborhood Map</title>
+		<!-- bootstrap used for responsive design -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+		<!-- font-awesome used for icons like yelp and foursquare -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+		<!-- internal style sheet used for additional styling including pagination styles.
+			 internal used to help improve load time -->
+		<style>
+			@import url(http://fonts.googleapis.com/css?family=Bitter:400,700);
+      		.navbar{
+      			border-radius: 0px;
+      		}
+      		input{
+      			margin: 5px;
+      		}
+      		header{
+      			margin-bottom: 20px;
+      		}
+		    #map {
+		      	min-width: 200px;
+		      	min-height: 250px;
+		      }
+     		#map_wrapper {
+    			height: 400px;
+			}
+			#map_canvas {
+    			width: 100%;
+    			height: 100%;
+			}
+			#search-button-container{
+				margin-bottom: 10px;
+			}
+      		h1 {
+				margin: 0px;
+				text-align: center;
+				text-shadow: -1px -1px 0px rgba(255,255,255,0.3), 1px 1px 0px rgba(0,0,0,0.8);
+				color: #333;
+				opacity: 0.4;
+				font: 700 80px 'Bitter';
+				border-style: solid;
+    			border-width: 5px;
+			}
+			/* Set the fixed height of the footer here */
+      		footer {
+      			color: #fff;
+  				bottom: 0;
+  				width: 100%;
+  				height: 60px;
+  				background-color: #333;
+			}
+			.small_text {
+				font-size: 11px;
+			}
+			#yelp-container {
+				border-bottom: 1px solid #7FFFD4;
+				padding-right: 20px;
+				margin-bottom: 10px;
+			}
+			button {
+				margin: 10px;
+			}
+			ul.simplePagerNav li{
+			    display:block;
+			    float: left;
+			    padding: 10px;
+			    margin-bottom: 10px;
+			    font-family: georgia;
+				font-size:14px;
+			}
+			ul.simplePagerNav li a{
+			    color: #333;
+			    text-decoration: none;
+			}
+			li.currentPage {
+				background: red;
+			    background: #FF9500;	
+			}
+			ul.simplePagerNav li.currentPage a {
+				color: #fff;	
+			}
+
+			@media screen and (max-width: 600px) {
+			    h1 {
+					text-shadow: -1px -1px 0px rgba(255,255,255,0.3), 1px 1px 0px rgba(0,0,0,0.8);
+					color: #333;
+					opacity: 0.4;
+					font: 700 24px 'Bitter';
+					border-style: solid;
+				    border-width: 1px;
+				}
+				#map_wrapper {
+			    	height: 200px;
+				}
+			}
+
+			@media screen and (max-width: 1024px) and (min-width: 600px){
+				h1 {
+					text-shadow: -1px -1px 0px rgba(255,255,255,0.3), 1px 1px 0px rgba(0,0,0,0.8);
+					color: #333;
+					opacity: 0.4;
+					font: 700 48px 'Bitter';
+					border-style: solid;
+				    border-width: 1px;
+				}
+			 	#map {
+					min-width: 100px;
+				}
+
+			    #map_wrapper {
+			    	height: 200px;
+				}
+				#map_canvas {
+			   		width: 100%;
+			    	height: 100%;
+				}
+			}
+		</style>
+	</head>
+	<body>
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+		    <!-- Brand and toggle get grouped for better mobile display -->
+		    <div class="navbar-header">
+		      	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+		        <span class="sr-only">Toggle navigation</span>
+		        <span class="icon-bar"></span>
+		        <span class="icon-bar"></span>
+		        <span class="icon-bar"></span>
+		      	</button>
+		      	<a class="navbar-brand" href="https://www.udacity.com/wiki/nd001" target = "_blank">Project 5 - Udacity <i class="fa fa-home"></i></a>
+		      	<br>
+		    </div>
+	    	<!-- Collect the nav links, forms, and other content for toggling -->
+		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		      	<ul class="nav navbar-nav">
+		        	<li><a href="http://yelp.com" target="_blank">Yelp <i class="fa fa-yelp"></i></a></li>
+		        	<li><a href="https://foursquare.com/" target="_blank">FourSquare  <i class="fa fa-foursquare"></i></a></li>
+		      	</ul>
+		    </div><!-- /.navbar-collapse -->
+	  	</div><!-- /.container-fluid -->
+	</nav>
+	<header id="header" class="text-center">
+		<div class="row">
+			<h1>Neighborhood Map</h1>
+		</div>
+	</header>
+	<div class="container">
+		<div class = "row">
+				<div class="row">
+					<div class = "col-sm-6 col-md-4">
+						<section id="searchHeader">
+							<div id="termSearchHeader" class="container-fluid">
+								<h4>Search Term </h4>(Results Returned: <span data-bind="text: searchResults"></span>)
+								<input class="form-control" data-bind='textInput: searchTerm, event: {keyup: getResults}'/>
+							</div>
+							<div id="yelp-container">
+								<div class="radio container">
+	  								<label><input type="radio" name="reviewsite" checked="checked" data-bind="checked: reviewSiteResults, event: {change: getResults}" value="Foursquare">Foursquare</label>
+								</div>
+								<div class="radio container">
+	  								<label><input type="radio" name="reviewsite" data-bind="checked: reviewSiteResults, event: {change: getResults}" value="Yelp">Yelp</label>
+								</div>
+							</div>
+						</section>
+					</div>
+					<div class="col-sm-6 col-md-8">
+						<section id="mapArea">
+							<div class="container-fluid col-md-push-3" id="neighborhoodSearchHeader">
+								<form data-bind="submit: createMap">
+									<h4>Select Neighborhood</h4>
+									<h5> (Current: <span data-bind="text: formattedAddress"></span>)</h5>
+									<div class="col-sm-6 col-md-6">
+										<span>
+											Search Radius (miles):<input type = "number" class="input-sm" data-bind='value: searchRadius, attr: {max: 25, min: 1, step: 1}'/>
+										</span>
+									</div>
+									<div class="col-sm-6 col-md-6">
+										<span>
+											# Results(Max: 30):<input type = "number" class="input-sm" data-bind='value: mapNumber, attr: {max: 30, min: 1, step: 1}'/>
+										</span>
+									</div>
+									<div class="col-xs-12 col-sm-12" id="search-button-container">
+										<span>
+											<button class="btn btn-default" type="submit">Neighborhood</button>
+											<button class="btn btn-default" data-bind='event: {click: getResults}'>Search/Refresh</button>
+										</span>
+										<br/>
+									</div>
+									<input class="form-control" data-bind="value: neighborhood" autofocus/>
+								</form>
+							</div>
+						</section>
+					</div>	
+			</div>		
+			<div class ="row">
+				<div class="col-sm-6 col-sm-push-6 col-md-8 col-md-push-4">
+					<div id="map"></div>
+				</div>
+				<div class = "col-sm-6 col-sm-pull-6 col-md-4 col-md-pull-8">
+					<div id="results">
+						<!--pagination div-->
+						<ul class="pagination3" data-bind="foreach: foundLocations">
+							<!--Return results for Yelp -->
+	            			<div data-bind="if: rating, click:$parent.clickMarker.bind($data)"><b><li data-bind="text: combined"></li></b>
+	            				<span class = "small_text" data-bind="text: description" ></span><br/>
+	            			</div>
+	            			<!-- Return results for Foursquare -->
+	            			<div data-bind="if: people, click:$parent.clickMarker.bind($data)"><b><li data-bind="text: name"></li></b>
+	            				Current People: <span class = "small_text" data-bind="text: people" ></span><br/>
+	            				Total Checkins: <span class = "small_text" data-bind="text: checkins" ></span><br/>
+	            			</div>
+	            			<!--anchor tag used to generate url for all types of return results if available-->
+	            			<a class = "anchorTextWrap small_text" data-bind="attr: { href: url}" target="_blank"><span data-bind="text: url"></span></a>
+	    				</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<br>
+	</div>
+	<footer id="footer-bottom">
+		<div class="container">
+			<p>Created by Ryan Roethle</p>
+		</div>
+	</footer>
+	<script src="scripts/jquery-2.1.4.min.js"> </script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" async defer></script>
+	<script src="scripts/knockout-3.3.0.js"></script>
+	<script src="scripts/sha1.js" async defer> </script>
+	<script src="scripts/oauth.js" async defer> </script>
+	<script src="scripts/jquery.quick.pagination.min.js"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD5KM6gI6jVqcykSSFSHrIJe1W9nVeMqic&libraries=places&callback=NeighborhoodViewModel.createMap" async defer></script>	
+	<script src="scripts/neighborhood.js"> </script>
+	</body>	
+</html>
