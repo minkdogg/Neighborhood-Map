@@ -33,4 +33,4 @@ By far my favorite project thus far. Please note the following:
 
 -Most of my error handling is handled by providing defaults and also making console.log error messages for debugging.
 	 
-=I tried to gracefully handle these errors this way as to not alert the user something was wrong. This is why I tried to display what was returned by the location to the user. I would definitely take advice on how to do this better.
+-I tried to gracefully handle these errors this way as to not alert the user something was wrong. This is why I tried to display what was returned by the location to the user. I would definitely take advice on how to do this better.
