@@ -21,18 +21,14 @@
       			margin-bottom: 20px;
       		}
 		    #map {
-		      	min-width: 200px;
-		      	min-height: 250px;
+		      	width:100%;
+				height:500px !important;
 		      }
-     		#map_wrapper {
-    			height: 400px;
-			}
-			#map_canvas {
-    			width: 100%;
-    			height: 100%;
-			}
 			#search-button-container{
 				margin-bottom: 10px;
+			}
+			.selected {
+				background-color: #C0C0C0;
 			}
       		h1 {
 				margin: 0px;
@@ -41,8 +37,6 @@
 				color: #333;
 				opacity: 0.4;
 				font: 700 80px 'Bitter';
-				border-style: solid;
-    			border-width: 5px;
 			}
 			/* Set the fixed height of the footer here */
       		footer {
@@ -55,7 +49,20 @@
 			.small_text {
 				font-size: 11px;
 			}
-			#yelp-container {
+			.error {
+				font-style: italic;
+				color: red;
+				font-size: 12px;
+			}
+			.instructions {
+				font-size: 12px;
+				font-style: italic;
+				padding: 10px 0;
+			}
+			#short-instructions {
+				display:none;
+			}
+			#review-site-container {
 				border-bottom: 1px solid #7FFFD4;
 				padding-right: 20px;
 				margin-bottom: 10px;
@@ -88,34 +95,36 @@
 					text-shadow: -1px -1px 0px rgba(255,255,255,0.3), 1px 1px 0px rgba(0,0,0,0.8);
 					color: #333;
 					opacity: 0.4;
-					font: 700 24px 'Bitter';
-					border-style: solid;
-				    border-width: 1px;
+					font: 700 36px 'Bitter';
+					margin: 0px;
 				}
-				#map_wrapper {
-			    	height: 200px;
+				.instructions {
+					display:none;
 				}
+				#short-instructions{
+					display:none;
+				}
+				 #map {
+		      	width:100%;
+				height:400px !important;
+				margin-bottom: 10px;
+		      }
 			}
 
-			@media screen and (max-width: 1024px) and (min-width: 600px){
+			@media screen and (max-width: 991px) and (min-width: 600px){
 				h1 {
 					text-shadow: -1px -1px 0px rgba(255,255,255,0.3), 1px 1px 0px rgba(0,0,0,0.8);
 					color: #333;
 					opacity: 0.4;
 					font: 700 48px 'Bitter';
-					border-style: solid;
-				    border-width: 1px;
 				}
-			 	#map {
-					min-width: 100px;
+				.instructions{
+					display: none;
 				}
-
-			    #map_wrapper {
-			    	height: 200px;
-				}
-				#map_canvas {
-			   		width: 100%;
-			    	height: 100%;
+				#short-instructions{
+					display: inline;
+					font-size: 12px;
+				font-style: italic;
 				}
 			}
 		</style>
@@ -143,61 +152,69 @@
 		    </div><!-- /.navbar-collapse -->
 	  	</div><!-- /.container-fluid -->
 	</nav>
-	<header id="header" class="text-center">
+	<header id="header" class="container text-center">
 		<div class="row">
 			<h1>Neighborhood Map</h1>
 		</div>
 	</header>
 	<div class="container">
-		<div class = "row">
-				<div class="row">
-					<div class = "col-sm-6 col-md-4">
-						<section id="searchHeader">
-							<div id="termSearchHeader" class="container-fluid">
-								<h4>Search Term </h4>(Results Returned: <span data-bind="text: searchResults"></span>)
-								<input class="form-control" data-bind='textInput: searchTerm, event: {keyup: getResults}'/>
+			<div class="row">
+				<div class = "col-sm-6 col-md-4">
+					<section id="searchHeader">
+						<div id="termSearchHeader" class="container-fluid">
+							<h4>Search Term </h4>
+							<p class="error" data-bind = "text: errorMessage"></p>
+							(Results Returned: <span data-bind="text: searchResults"></span>)
+							<input class="form-control"data-bind='textInput: searchTerm, event: {keyup: getResults}'/>
+						</div>
+						<div class="col-sm-12 col-md-12">
+							<span>
+									Search Radius(miles):<input type = "number" class="input-sm" data-bind='value: searchRadius, attr: {max: 25, min: 1, step: 1}, event: {change: getResults}'/>
+							</span>
+						</div>
+						<div class="col-sm-12 col-md-12">
+							<span>
+									Max # Return Results <input type = "number" class="input-sm" data-bind='value: mapNumber, attr: {max: 30, min: 1, step: 1}, event: {change: getResults}'/>
+							</span>
+						</div>
+						<div class="col-sm-12 container" id="review-site-container">
+							<div class="radio">
+  								<label><input type="radio" name="reviewsite" checked="checked" data-bind="checked: reviewSiteResults, event: {change: getResults}" value="Foursquare">Foursquare</label>
 							</div>
-							<div id="yelp-container">
-								<div class="radio container">
-	  								<label><input type="radio" name="reviewsite" checked="checked" data-bind="checked: reviewSiteResults, event: {change: getResults}" value="Foursquare">Foursquare</label>
+							<div class="radio">
+  								<label><input type="radio" name="reviewsite" data-bind="checked: reviewSiteResults, event: {change: getResults}" value="Yelp">Yelp</label>
+							</div>
+						</div>
+					</section>
+				</div>
+				<div class="col-sm-6 col-md-8">
+					<section id="mapArea">
+						<div class="container-fluid col-md-push-3" id="neighborhoodSearchHeader">
+							<form data-bind="submit: createMap">
+								<h4>Select Neighborhood</h4>
+								<h5> (Current: <span data-bind="text: formattedAddress"></span>)</h5>
+								<div class="instructions row">
+									<p>Start entering in key word in "Search Term" input box or select "Find Results" to display populate map! If nothing is entered "pizza" is the default search because who doesn't love pizza! (if you don't love pizza, then this will show you where not to go!")</p>
+									<p>To view a specific neighborhood in detail, enter a city, address, or place name
+									and select "See Neighborhood"</p>
 								</div>
-								<div class="radio container">
-	  								<label><input type="radio" name="reviewsite" data-bind="checked: reviewSiteResults, event: {change: getResults}" value="Yelp">Yelp</label>
+								<div id="short-instructions" class="row">
+									<p>Enter in key word in "Search Term" or select "Find Results" to search by term! Search a neighborhood by entering city, address, or place name and select "See Neighborhood" </p>
 								</div>
-							</div>
-						</section>
-					</div>
-					<div class="col-sm-6 col-md-8">
-						<section id="mapArea">
-							<div class="container-fluid col-md-push-3" id="neighborhoodSearchHeader">
-								<form data-bind="submit: createMap">
-									<h4>Select Neighborhood</h4>
-									<h5> (Current: <span data-bind="text: formattedAddress"></span>)</h5>
-									<div class="col-sm-6 col-md-6">
-										<span>
-											Search Radius (miles):<input type = "number" class="input-sm" data-bind='value: searchRadius, attr: {max: 25, min: 1, step: 1}'/>
-										</span>
-									</div>
-									<div class="col-sm-6 col-md-6">
-										<span>
-											# Results(Max: 30):<input type = "number" class="input-sm" data-bind='value: mapNumber, attr: {max: 30, min: 1, step: 1}'/>
-										</span>
-									</div>
-									<div class="col-xs-12 col-sm-12" id="search-button-container">
-										<span>
-											<button class="btn btn-default" type="submit">Neighborhood</button>
-											<button class="btn btn-default" data-bind='event: {click: getResults}'>Search/Refresh</button>
-										</span>
-										<br/>
-									</div>
-									<input class="form-control" data-bind="value: neighborhood" autofocus/>
-								</form>
-							</div>
-						</section>
-					</div>	
+								<div class="col-xs-12 col-sm-12" id="search-button-container">
+									<button class="btn btn-default" type="submit">Neighborhood</button>
+									<button class="btn btn-default" data-bind='event: {click: getResults}'>Find Results</button>
+									<br/>
+								</div>
+								<input class="form-control" data-bind="value: neighborhood" autofocus/>
+							</form>
+							
+						</div>
+					</section>
+				</div>	
 			</div>		
 			<div class ="row">
-				<div class="col-sm-6 col-sm-push-6 col-md-8 col-md-push-4">
+				<div class="col-sm-6 col-sm-push-6 col-md-8 col-md-push-4 container">
 					<div id="map"></div>
 				</div>
 				<div class = "col-sm-6 col-sm-pull-6 col-md-4 col-md-pull-8">
@@ -205,21 +222,23 @@
 						<!--pagination div-->
 						<ul class="pagination3" data-bind="foreach: foundLocations">
 							<!--Return results for Yelp -->
-	            			<div data-bind="if: rating, click:$parent.clickMarker.bind($data)"><b><li data-bind="text: combined"></li></b>
+	            			<div data-bind="if: rating, click:$parent.clickMarker.bind($data), css: {'selected': $parent.selectedDiv() == $data}">
+	            				<b><li data-bind="text: combinedNameYelp"></li></b>
 	            				<span class = "small_text" data-bind="text: description" ></span><br/>
 	            			</div>
 	            			<!-- Return results for Foursquare -->
-	            			<div data-bind="if: people, click:$parent.clickMarker.bind($data)"><b><li data-bind="text: name"></li></b>
+	            			<div data-bind="if: people, click:$parent.clickMarker.bind($data),  css: {'selected': $parent.selectedDiv() == $data}">
+	            			<b><li data-bind="text: combinedNameFoursquare"></li></b>
 	            				Current People: <span class = "small_text" data-bind="text: people" ></span><br/>
 	            				Total Checkins: <span class = "small_text" data-bind="text: checkins" ></span><br/>
 	            			</div>
 	            			<!--anchor tag used to generate url for all types of return results if available-->
-	            			<a class = "anchorTextWrap small_text" data-bind="attr: { href: url}" target="_blank"><span data-bind="text: url"></span></a>
+	            			<a class = "anchorTextWrap small_text" data-bind="attr: { href: url}" target="_blank">
+	            			<span data-bind="text: url"></span></a>
 	    				</ul>
 					</div>
 				</div>
 			</div>
-		</div>
 		<br>
 	</div>
 	<footer id="footer-bottom">
