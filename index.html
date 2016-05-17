@@ -48,6 +48,7 @@
 			}
 			.small_text {
 				font-size: 11px;
+				word-wrap: break-word;
 			}
 			.error {
 				font-style: italic;
@@ -193,7 +194,7 @@
 							<form data-bind="submit: createMap">
 								<h4>Select Neighborhood</h4>
 								<h5> (Current: <span data-bind="text: formattedAddress"></span>)</h5>
-								<div class="instructions row">
+								<div class="instructions">
 									<p>Start entering in key word in "Search Term" input box or select "Find Results" to display populate map! If nothing is entered "pizza" is the default search because who doesn't love pizza! (if you don't love pizza, then this will show you where not to go!")</p>
 									<p>To view a specific neighborhood in detail, enter a city, address, or place name
 									and select "See Neighborhood"</p>
@@ -201,10 +202,12 @@
 								<div id="short-instructions" class="row">
 									<p>Enter in key word in "Search Term" or select "Find Results" to search by term! Search a neighborhood by entering city, address, or place name and select "See Neighborhood" </p>
 								</div>
-								<div class="col-xs-12 col-sm-12" id="search-button-container">
-									<button class="btn btn-default" type="submit">Neighborhood</button>
-									<button class="btn btn-default" data-bind='event: {click: getResults}'>Find Results</button>
-									<br/>
+								<div class="row">
+									<div class="col-xs-12 col-sm-12" id="search-button-container">
+										<button class="btn btn-default" type="submit">Neighborhood</button>
+										<button class="btn btn-default" data-bind='event: {click: getResults}'>Find Results</button>
+										<br/>
+									</div>
 								</div>
 								<input class="form-control" data-bind="value: neighborhood" autofocus/>
 							</form>
